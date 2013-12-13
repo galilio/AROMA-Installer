@@ -42,6 +42,7 @@ static byte     transition_style  = 0;
 PNGCANVAS * pico_back = NULL;
 PNGCANVAS * pico_next = NULL;
 PNGCANVAS * pico_menu = NULL;
+PNGCANVAS * pico_logo = NULL;
 void aui_release_cached_icons() {
   if (pico_back != NULL) {
     apng_close(pico_back);
@@ -56,6 +57,11 @@ void aui_release_cached_icons() {
   if (pico_menu != NULL) {
     apng_close(pico_menu);
     free(pico_menu);
+  }
+  
+  if(pico_logo != NULL) {
+      apng_close(pico_logo);
+      free(pico_logo);
   }
 }
 PNGCANVAS * aui_back_icon() {
@@ -120,6 +126,24 @@ PNGCANVAS * aui_menu_icon() {
   }
   
   return pico_menu;
+}
+
+PNGCANVAS * aui_logo_icon() {
+  if (aui_isbgredraw) {
+    if (pico_logo != NULL) {
+      apng_close(pico_logo);
+      free(pico_logo);
+    }
+    
+    pico_logo = (PNGCANVAS *) malloc(sizeof(PNGCANVAS));
+    
+    if (!apng_load(pico_logo, "@logo")) {
+      free(pico_logo);
+      pico_logo = NULL;
+    }
+  }
+  
+  return pico_logo;
 }
 
 //-- Back History
@@ -287,10 +311,12 @@ byte aroma_theme_update() {
     aui_setthemecolor(propstr,  "color.border",             &acfg()->border);
     aui_setthemecolor(propstr,  "color.border_g",           &acfg()->border_g);
     aui_setthemecolor(propstr,  "color.progressglow",       &acfg()->progressglow);
+    aui_setthemecolor(propstr,  "color.checkbox_group",     &acfg()->checkbox_group);
     aui_setthemeconfig(propstr, "config.roundsize",         &acfg()->roundsz);
     aui_setthemeconfig(propstr, "config.button_roundsize",  &acfg()->btnroundsz);
     aui_setthemeconfig(propstr, "config.window_roundsize",  &acfg()->winroundsz);
     aui_setthemeconfig(propstr, "config.transition_frame",  &acfg()->fadeframes);
+    
     free(propstr);
     snprintf(acfg()->themename, 64, "%s", aroma_theme_request);
   }
@@ -323,7 +349,7 @@ void aui_redraw() {
   aui_menu_icon();
   ag_blank(&aui_bg);
   int elmP  = agdp() * 2;
-  int capH  = ag_fontheight(1) + (elmP * 2);
+  int capH  = ag_fontheight(1) + (elmP * 6);
   aui_minY  = capH;
   ag_rect(&aui_bg, 0, 0, agw(), agh(), 0x0000);
   
@@ -336,6 +362,8 @@ void aui_redraw() {
   if (!atheme_id_draw(1, &aui_bg, 0, 0, agw(), capH)) {
     ag_roundgrad_ex(&aui_bg, 0, 0, agw(), capH, acfg()->titlebg, acfg()->titlebg_g, (acfg()->winroundsz * agdp()) - 2, 1, 1, 0, 0);
   }
+  
+  apng_draw(&aui_bg, aui_logo_icon(), 20, 30);
   
   aui_isbgredraw = 0;
 }
@@ -350,8 +378,8 @@ void aui_setbg(char * titlev) {
   int elmP  = agdp() * 2;
   int titW  = ag_txtwidth(title, 1);
   ag_draw(&aui_win_bg, &aui_bg, 0, 0);
-  ag_textf(&aui_win_bg, titW, ((agw() / 2) - (titW / 2)) + 1, elmP + 1, title, acfg()->titlebg_g, 1);
-  ag_text(&aui_win_bg, titW, (agw() / 2) - (titW / 2), elmP, title, acfg()->titlefg, 1);
+  //  ag_textf(&aui_win_bg, titW, 20 + 1, elmP * 3 + 1, title, acfg()->titlebg_g, 1);
+  ag_text(&aui_win_bg, titW, 20 * 5, elmP * 3, title, acfg()->titlefg, 1);
 }
 
 //*

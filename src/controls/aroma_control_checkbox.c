@@ -160,8 +160,10 @@ void accheck_redrawitem(ACONTROLP ctl, int index) {
   
   if (p->isTitle) {
     ag_roundgrad(c, 0, p->y, d->clientWidth, p->h, acfg()->titlebg, acfg()->titlebg_g, 0);
+    ag_roundgrad(c, 0, p->y + p->h - 2, d->clientWidth, p->h, acfg()->checkbox_group, acfg()->checkbox_group, 0);
+    
     ag_textf(c, d->clientTextW + (agdp() * 14), (d->clientTextX - (agdp() * 14)) + 1, p->y + p->ty, p->title, acfg()->titlebg_g, 0);
-    ag_text(c, d->clientTextW + (agdp() * 14), d->clientTextX - (agdp() * 14), p->y + p->ty - 1, p->title, acfg()->titlefg, 0);
+    ag_text(c, d->clientTextW + (agdp() * 14), d->clientTextX - (agdp() * 14), p->y + p->ty - 1, p->title, acfg()->checkbox_group, 0);
   }
   else {
     color txtcolor = acfg()->textfg;

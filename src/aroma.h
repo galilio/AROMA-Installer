@@ -355,6 +355,8 @@ typedef struct  {
   color border_g;             // Border Color Gradient
   color progressglow;         // Progress Bar Glow Color
   
+  color checkbox_group;       // checkbox group color.
+  
   // Property
   byte  roundsz;              // Control Rounded Size
   byte  btnroundsz;           // Button Control Rounded Size
